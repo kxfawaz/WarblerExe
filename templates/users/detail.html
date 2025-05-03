@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="profile-header" style="background-image: url('{{ user.header_image }}'); height: 250px; background-size: cover; background-position: center; position: relative;">
+
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3);"></div>
+</div>
+
+<img src="{{ user.image_url }}" alt="Image for {{ user.username }}" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #fff; margin-top: -75px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; position: relative; z-index: 60;">
+
+<div class="row full-width">
+</div>
+
+
+<div class="row full-width">
+  <div class="container">
+    <div class="row justify-content-end">
+      <div class="col-9">
+        <ul class="user-stats nav nav-pills">
+          <li class="stat">
+            <p class="small">Messages</p>
+            <h4>
+              <a href="/users/{{ user.id }}">{{ user.messages | length }}</a>
+            </h4>
+          </li>
+          <li class="stat">
+            <p class="small">Following</p>
+            <h4>
+              <a href="/users/{{ user.id }}/following">{{ user.following | length }}</a>
+            </h4>
+          </li>
+          <li class="stat">
+            <p class="small">Followers</p>
+            <h4>
+              <a href="/users/{{ user.id }}/followers">{{ user.followers | length }}</a>
+            </h4>
+          </li>
+          <li class="stat">
+            <p class="small">Likes</p>
+            <h4><a href="/users/{{user.id}}/likes">{{ user.likes|length }}</a></h4>
+          </li>
+          <div class="ml-auto">
+            {% if g.user.id == user.id %}
+            <a href="/users/profile" class="btn btn-outline-secondary">Edit Profile</a>
+            <form method="POST" action="/users/delete" class="form-inline">
+              <button class="btn btn-outline-danger ml-2">Delete Profile</button>
+            </form>
+            {% elif g.user %}
+            {% if g.user.is_following(user) %}
+            <form method="POST" action="/users/stop-following/{{ user.id }}">
+              <button class="btn btn-primary">Unfollow</button>
+            </form>
+            {% else %}
+            <form method="POST" action="/users/follow/{{ user.id }}">
+              <button class="btn btn-outline-primary">Follow</button>
+            </form>
+            {% endif %}
+            {% endif %}
+          </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3">
+    <h4 id="sidebar-username">@{{ user.username }}</h4>
+    <p>{{user.bio if user.bio else 'This user has not added a bio'}} </p>
+    <p class="user-location"><span class="fa fa-map-marker"></span>{{user.location if user.location else 'Location not provided'}}</p>
+  </div>
+
+  {% block user_details %}
+  {% endblock %}
+
+</div>
+
+{% endblock %}
